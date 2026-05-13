@@ -2,6 +2,7 @@ import Board from "./view/board";
 import BenchmarkSummary from "./view/benchmarkSummary";
 import BenchmarkTable from "./view/benchmarkTable";
 import ReplayLog from "./view/replayLog";
+import TacticDescriptions from "./view/tacticDescriptions";
 import { SCENARIOS, type ScenarioId } from "./benchmark/scenarios";
 import { ROBOT_TACTICS, type RobotTactic } from "./agents/robotTactics";
 import { useTacticalSimulation } from "./hook/useTacticalSimulation";
@@ -56,6 +57,19 @@ export default function App() {
         <div style={{ marginTop: 18 }}>
           <BenchmarkSummary rows={sim.benchmarkRows} />
         </div>
+      </section>
+
+      <section
+        style={{
+          marginTop: 28,
+          padding: 18,
+          border: "1px solid #e5e7eb",
+          borderRadius: 12,
+          background: "#fafafa",
+        }}
+      >
+        <h2 style={{ marginTop: 0, textAlign: "center" }}>Tactics</h2>
+        <TacticDescriptions selectedTactic={sim.tactic} />
       </section>
 
       <section

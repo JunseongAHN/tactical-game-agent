@@ -99,10 +99,12 @@ export function runScenarioBenchmark(params: {
   tactics?: RobotTactic[];
   trials?: number;
   randomizeEnemies?: boolean;
+  seed?: number;
 }): BenchmarkResult {
   const tactics = params.tactics ?? ROBOT_TACTICS;
   const trials = params.trials ?? 10;
   const randomizeEnemies = params.randomizeEnemies ?? true;
+  const seed = params.seed ?? 0;
 
   const metrics = tactics.map((tactic) =>
     runTacticBenchmark({
@@ -110,6 +112,7 @@ export function runScenarioBenchmark(params: {
       tactic,
       trials,
       randomizeEnemies,
+      seed,
     }),
   );
 
@@ -123,13 +126,17 @@ export function runAllBenchmarks(params?: {
   tactics?: RobotTactic[];
   trials?: number;
   randomizeEnemies?: boolean;
+  seed?: number;
 }): BenchmarkResult[] {
-  return SCENARIOS.map((scenario) =>
+  const baseSeed = params?.seed ?? 0;
+
+  return SCENARIOS.map((scenario, scenarioIndex) =>
     runScenarioBenchmark({
       scenario,
       tactics: params?.tactics,
       trials: params?.trials ?? 10,
       randomizeEnemies: params?.randomizeEnemies ?? true,
+      seed: baseSeed + scenarioIndex * 10000,
     }),
   );
 }
@@ -138,11 +145,13 @@ export function runBenchmarkReport(params?: {
   tactics?: RobotTactic[];
   trials?: number;
   randomizeEnemies?: boolean;
+  seed?: number;
 }): BenchmarkReport {
   const results = runAllBenchmarks({
     tactics: params?.tactics,
     trials: params?.trials ?? 10,
     randomizeEnemies: params?.randomizeEnemies ?? true,
+    seed: params?.seed ?? Date.now(),
   });
 
   const rows = createBenchmarkTableRows(results);
@@ -154,12 +163,12 @@ export function runBenchmarkReport(params?: {
     summary,
   };
 }
-
 function runTacticBenchmark(params: {
   scenario: Scenario;
   tactic: RobotTactic;
   trials: number;
   randomizeEnemies: boolean;
+  seed: number;
 }): BenchmarkMetrics {
   const runs: SingleRunResult[] = [];
 
@@ -168,7 +177,9 @@ function runTacticBenchmark(params: {
 
     runs.push(
       runSingleSimulation(
-        params.randomizeEnemies ? randomizeEnemyPositions(state, i) : state,
+        params.randomizeEnemies
+          ? randomizeEnemyPositions(state, params.seed + i)
+          : state,
         params.tactic,
       ),
     );
@@ -585,11 +596,13 @@ export function runAndPrintBenchmarks(params?: {
   tactics?: RobotTactic[];
   trials?: number;
   randomizeEnemies?: boolean;
+  seed?: number;
 }): string {
   const results = runAllBenchmarks({
     tactics: params?.tactics,
     trials: params?.trials ?? 10,
     randomizeEnemies: params?.randomizeEnemies ?? true,
+    seed: params?.seed ?? Date.now(),
   });
 
   return formatAllBenchmarkResults(results);

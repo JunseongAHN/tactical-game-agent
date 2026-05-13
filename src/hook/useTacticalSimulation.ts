@@ -139,11 +139,11 @@ export function useTacticalSimulation() {
     const report = runBenchmarkReport({
       trials: 10,
       randomizeEnemies: true,
+      seed: Date.now(),
     });
 
     setBenchmarkRows(report.rows);
   }
-
   return {
     scenarioId,
     tactic,
