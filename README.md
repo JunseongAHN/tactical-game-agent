@@ -1,4 +1,4 @@
-# demo website
+# Demo Website
 https://junseongahn.github.io/tactical-game-agent/
 
 # Tactical Game Agent Benchmark
