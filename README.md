@@ -1,3 +1,6 @@
+# demo website
+https://junseongahn.github.io/tactical-game-agent/
+
 # Tactical Game Agent Benchmark
 
 A small grid-world benchmark for comparing tactical robot agents under enemy pursuit.
