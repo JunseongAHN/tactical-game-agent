@@ -1,73 +1,55 @@
-# Demo Website
-https://junseongahn.github.io/tactical-game-agent/
+# Tactics Game Agent MVP
 
-# Tactical Game Agent Benchmark
+Demo: https://junseongahn.github.io/tactical-game-agent/
 
-A small grid-world benchmark for comparing tactical robot agents under enemy pursuit.
-
-The robot must reach the goal while avoiding enemies.  
-Enemies chase the robot, and if they capture the robot, the run ends in loss.
+A small game-agent prototype for testing tactic selection, wall-use behavior, and AI-assisted adaptive decision logic.
 
 ## TL;DR
 
-This project is a **pursuit-evasion benchmark** for testing different robot tactics in obstacle-aware grid maps.
+Fixed tactics fail differently.
 
-It includes:
+- **Wall-aware** works well on simple maps.
+- **Composite** handles harder maps better.
+- **AI-adaptive** switches between them using a difficulty estimate.
 
-- Grid-based simulation
-- BFS pathfinding
-- Enemy chase and capture logic
-- Multiple robot tactics
-- Obstacle / wall-aware movement
-- Randomized benchmark trials
-- Visual board replay
-- Turn-by-turn decision log
+Key result:
 
-The key idea:
-
-> Simple shortest-path movement works in easy maps, but harder maps require tactics that use obstacles, avoid boundary traps, and adapt to enemy pressure.
+> AI-adaptive stays above the weaker baseline between wall-aware and composite, and sometimes performs better than both.
 
 ## Demo
 
-GIF demo will be added soon.
+![Demo](./assets/demo.gif)
 
-The demo will use the **Try One Example** section of the app, showing:
+The agent chooses actions using goal position, enemy pressure, wall structure, and threat zones.
 
-- selected scenario
-- selected tactic
-- board animation
-- replay log explaining each move
+## Wall-Use Example
 
-## Scenarios
+![Wall Use](./assets/wall-use.gif)
 
-The benchmark includes several maps:
+The wall-aware tactic uses walls to reduce enemy exposure while still moving toward the goal.
 
-- **Open Field** — no obstacles, simple baseline
-- **Enemy Near Goal** — enemy pressure near the goal
-- **Wall Corridor** — obstacle geometry can delay pursuit
-- **Chokepoint** — direct path is dangerous
-- **Multi Enemy Pressure** — multiple enemies pressure different routes
+- **Turn 3**: avoids the shortest open path
+- **Turn 6**: keeps using the wall corridor under pressure
+- **Turn 7**: keeps wall cover while progressing to the goal
 
 ## Tactics
 
-The benchmark compares several tactics:
+### Wall-Aware
 
-- `greedy-goal`
-- `distance-aware`
-- `threat-aware`
-- `wall-aware`
-- `composite`
-- `ai-adaptive`
-- `ai-pure`
+Simple wall-use logic. Strong on easier maps, weaker on harder maps.
 
-At a high level:
+### Composite
 
-```txt
-greedy-goal     = shortest path only
-distance-aware  = goal + enemy distance
-threat-aware    = avoid capture zone
-wall-aware      = use obstacles and inner routes
-composite       = switch behavior based on situation
-ai-adaptive     = AI-assisted selector between tactics
-ai-pure         = standalone AI-designed scoring policy
-```
+Combines goal progress, enemy distance, threat zones, health, and obstacle context. Stronger on harder maps, but sometimes too conservative on easy maps.
+
+### AI-Adaptive
+
+Uses an AI-assisted difficulty estimate to switch between wall-aware and composite.
+
+```ts
+difficulty =
+  unsafe path
++ enemy-controlled direct route
++ close enemy pressure
++ multiple enemies
++ weak wall / obstacle cover
